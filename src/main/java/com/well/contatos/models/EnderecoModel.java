@@ -8,7 +8,7 @@ import org.springframework.hateoas.RepresentationModel;
 
 @Entity
 @Table(name = "TB_ENDERECO")
-public class Endereco extends RepresentationModel<Endereco> implements Serializable {
+public class EnderecoModel extends RepresentationModel<EnderecoModel> implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
     @Id
@@ -17,17 +17,28 @@ public class Endereco extends RepresentationModel<Endereco> implements Serializa
     private String rua;
     private String bairro;
     private String numero;
+
+    private String cidade;
     private String cep;
+
     private String estado;
 
     @OneToOne(mappedBy = "endereco")
-    private Contato contato;
+    private ContatoModel contato;
 
-    public Contato getContato() {
+    public ContatoModel getContato() {
         return contato;
     }
 
-    public void setContato(Contato contato) {
+    public String getCidade() {
+        return cidade;
+    }
+
+    public void setCidade(String cidade) {
+        this.cidade = cidade;
+    }
+
+    public void setContato(ContatoModel contato) {
         this.contato = contato;
     }
 

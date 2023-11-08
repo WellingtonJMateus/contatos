@@ -8,7 +8,7 @@ import org.springframework.hateoas.RepresentationModel;
 
 @Entity
 @Table(name = "TB_CONTATOS")
-public class Contato extends RepresentationModel<Contato> implements Serializable {
+public class ContatoModel extends RepresentationModel<ContatoModel> implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -17,17 +17,17 @@ public class Contato extends RepresentationModel<Contato> implements Serializabl
     private UUID idContato;
     private String nome;
     private Integer idade;
-    private char sexo;
+    private String sexo;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "endereco_id", referencedColumnName = "idEndereco")
-    private Endereco endereco;
+    private EnderecoModel endereco;
 
-    public Endereco getEndereco() {
+    public EnderecoModel getEndereco() {
         return endereco;
     }
 
-    public void setEndereco(Endereco endereco) {
+    public void setEndereco(EnderecoModel endereco) {
         this.endereco = endereco;
     }
 
@@ -55,11 +55,11 @@ public class Contato extends RepresentationModel<Contato> implements Serializabl
         this.idade = idade;
     }
 
-    public char getSexo() {
+    public String getSexo() {
         return sexo;
     }
 
-    public void setSexo(char sexo) {
+    public void setSexo(String sexo) {
         this.sexo = sexo;
     }
 }
