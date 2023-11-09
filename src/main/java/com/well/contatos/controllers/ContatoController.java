@@ -13,9 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -25,22 +24,37 @@ public class ContatoController {
     @Autowired
     private ContatoService contatoService;
 
+    @GetMapping("/contatos/numberrows")
+    public ResponseEntity<Long> getNumeroDeRegistros(){
+        return ResponseEntity.status(HttpStatus.OK).body(contatoService.getnumberOfRows());
+    }
+
+    @GetMapping("/contatos/paginacao")
+    public ResponseEntity<List<ContatoDTOResponse>> getPaginacao(@RequestParam(name = "pageNumber") int pageNumber,
+                                                                 @RequestParam(name = "pageSize") int pageSize,
+                                                                 @RequestParam(name = "orderPorCampo") String sortBy){
+        return ResponseEntity.status(HttpStatus.OK).body(contatoService.getPaginacao(pageNumber, pageSize, sortBy));
+    }
+
+    @GetMapping("/contatos/numberrowsbyage/{age}")
+    public ResponseEntity<List<ContatoDTOResponse>> getContatosPorIdade(@PathVariable(value="age") Integer age){
+        return ResponseEntity.status(HttpStatus.OK).body(contatoService.getContaModelByAge(age));
+    }
+
+    @GetMapping("/contatos/ordenadoPor/{campo}")
+    public ResponseEntity<List<ContatoDTOResponse>> getContatosOrdenadosPorCampo(@PathVariable(value="campo") String campo){
+        return ResponseEntity.status(HttpStatus.OK).body(contatoService.getContatoModelOrdernadoPor(campo));
+    }
+
     @GetMapping("/contatos")
     public ResponseEntity<List<ContatoDTOResponse>> getAllContatos(){
-        List<ContatoModel> contatoList = contatoService.listAll();
-        if(!contatoList.isEmpty()) {
-            for(ContatoModel contatoModel : contatoList) {
-                UUID id = contatoModel.getIdContato();
-                contatoModel.add(linkTo(methodOn(ContatoController.class).getOneContato(id)).withSelfRel());
-            }
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(ContatoDTOResponseMapper.mapTo(contatoList));
+        List<ContatoDTOResponse> contatoList = contatoService.listAll();
+        return ResponseEntity.status(HttpStatus.OK).body(contatoList);
     }
 
     @PostMapping("/contatos")
     public ResponseEntity<ContatoDTOResponse> saveContato(@RequestBody @Valid ContatoDTORequest contatoDTORequest) {
-        ContatoDTOResponse contatoDTOResponse = ContatoDTOResponseMapper.mapTo(contatoService.save(ContatoDTORequestMapper.mapTo(contatoDTORequest)));
-        return ResponseEntity.status(HttpStatus.CREATED).body(contatoDTOResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).body(contatoService.save(ContatoDTORequestMapper.mapTo(contatoDTORequest)));
     }
 
     @DeleteMapping("/contatos/{id}")
@@ -74,7 +88,6 @@ public class ContatoController {
         }
         ContatoModel model = ContatoDTORequestMapper.mapTo(contatoDTORequest);
         model.setIdContato(id);
-        ContatoDTOResponse contatoDTOResponse = ContatoDTOResponseMapper.mapTo(contatoService.save(model));
-        return ResponseEntity.status(HttpStatus.OK).body(contatoDTOResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(contatoService.save(model));
     }
 }
