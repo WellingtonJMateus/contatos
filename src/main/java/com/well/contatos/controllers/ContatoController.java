@@ -1,11 +1,13 @@
 package com.well.contatos.controllers;
 
 
-import com.well.contatos.dtos.ContatoRecordDTO;
+import com.well.contatos.dtos.ContatoDTORequest;
+import com.well.contatos.dtos.ContatoDTOResponse;
+import com.well.contatos.mapper.ContatoDTORequestMapper;
+import com.well.contatos.mapper.ContatoDTOResponseMapper;
 import com.well.contatos.models.ContatoModel;
 import com.well.contatos.services.ContatoService;
 import jakarta.validation.Valid;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +26,7 @@ public class ContatoController {
     private ContatoService contatoService;
 
     @GetMapping("/contatos")
-    public ResponseEntity<List<ContatoModel>> getAllContatos(){
+    public ResponseEntity<List<ContatoDTOResponse>> getAllContatos(){
         List<ContatoModel> contatoList = contatoService.listAll();
         if(!contatoList.isEmpty()) {
             for(ContatoModel contatoModel : contatoList) {
@@ -32,24 +34,13 @@ public class ContatoController {
                 contatoModel.add(linkTo(methodOn(ContatoController.class).getOneContato(id)).withSelfRel());
             }
         }
-        return ResponseEntity.status(HttpStatus.OK).body(contatoList);
-    }
-
-    @GetMapping("/contatos/{id}")
-    public ResponseEntity<Object> getOneContato(@PathVariable(value="id") UUID id){
-        Optional<ContatoModel> contatoModel = contatoService.get(id);
-        if(contatoModel.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Contato não encontrado.");
-        }
-        contatoModel.get().add(linkTo(methodOn(ContatoController.class).getAllContatos()).withRel("Lista de Contatos"));
-        return ResponseEntity.status(HttpStatus.OK).body(contatoModel.get());
+        return ResponseEntity.status(HttpStatus.OK).body(ContatoDTOResponseMapper.mapTo(contatoList));
     }
 
     @PostMapping("/contatos")
-    public ResponseEntity<ContatoModel> saveContato(@RequestBody @Valid ContatoRecordDTO contatoRecordDTO) {
-        var contatoModel = new ContatoModel();
-        BeanUtils.copyProperties(contatoRecordDTO, contatoModel);
-        return ResponseEntity.status(HttpStatus.CREATED).body(contatoService.save(contatoModel));
+    public ResponseEntity<ContatoDTOResponse> saveContato(@RequestBody @Valid ContatoDTORequest contatoDTORequest) {
+        ContatoDTOResponse contatoDTOResponse = ContatoDTOResponseMapper.mapTo(contatoService.save(ContatoDTORequestMapper.mapTo(contatoDTORequest)));
+        return ResponseEntity.status(HttpStatus.CREATED).body(contatoDTOResponse);
     }
 
     @DeleteMapping("/contatos/{id}")
@@ -62,15 +53,28 @@ public class ContatoController {
         return ResponseEntity.status(HttpStatus.OK).body("Contato deletado com sucesso..");
     }
 
+    @GetMapping("/contatos/{id}")
+    public ResponseEntity<Object> getOneContato(@PathVariable(value="id") UUID id){
+        Optional<ContatoModel> contatoModel = contatoService.get(id);
+        if(contatoModel.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Contato não encontrado.");
+        }
+        contatoModel.get().add(linkTo(methodOn(ContatoController.class).getAllContatos()).withRel("Lista de Contatos"));
+        ContatoDTOResponse contatoDTOResponse = ContatoDTOResponseMapper.mapTo(contatoModel.get());
+        return ResponseEntity.status(HttpStatus.OK).body(contatoDTOResponse);
+    }
+
+
     @PutMapping("/contatos/{id}")
     public ResponseEntity<Object> updateContato(@PathVariable(value="id") UUID id,
-                                                @RequestBody @Valid ContatoRecordDTO contatoRecordDTO) {
+                                                @RequestBody @Valid  ContatoDTORequest contatoDTORequest) {
         Optional<ContatoModel> contatoModel = contatoService.get(id);
         if(contatoModel.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Contato não encontrado..");
         }
-        var contato = contatoModel.get();
-        BeanUtils.copyProperties(contatoRecordDTO, contato);
-        return ResponseEntity.status(HttpStatus.OK).body(contatoService.save(contato));
+        ContatoModel model = ContatoDTORequestMapper.mapTo(contatoDTORequest);
+        model.setIdContato(id);
+        ContatoDTOResponse contatoDTOResponse = ContatoDTOResponseMapper.mapTo(contatoService.save(model));
+        return ResponseEntity.status(HttpStatus.OK).body(contatoDTOResponse);
     }
 }
