@@ -20,3 +20,4 @@ Exemplo de payload para testes:
 
 
 Url para testes: http://localhost:8080/app/contatos
+url para documentação: http://localhost:8080/swagger-ui/index.html
