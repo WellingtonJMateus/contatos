@@ -1,16 +1,19 @@
 package com.well.contatos.mapper;
 
-import com.well.contatos.dtos.ContatoDTORequest;
 import com.well.contatos.dtos.ContatoDTOResponse;
 import com.well.contatos.dtos.EnderecoDTOResponse;
-import com.well.contatos.models.ContatoModel;
+import com.well.contatos.entity.ContatoEntity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ContatoDTOResponseMapper {
 
-    public static ContatoDTOResponse mapTo(ContatoModel contatoModel) {
+    private ContatoDTOResponseMapper(){
+        throw new IllegalStateException("Mapper Class");
+    }
+
+    public static ContatoDTOResponse mapTo(ContatoEntity contatoModel) {
         return ContatoDTOResponse
                 .builder()
                 .idContato(contatoModel.getIdContato())
@@ -32,7 +35,7 @@ public class ContatoDTOResponseMapper {
 
     }
 
-    public static List<ContatoDTOResponse> mapTo(List<ContatoModel> listaContatoModels) {
+    public static List<ContatoDTOResponse> mapTo(List<ContatoEntity> listaContatoModels) {
         List<ContatoDTOResponse> contatoDTOResponseList = new ArrayList<>();
         listaContatoModels.forEach(contatoModel ->
                 contatoDTOResponseList.add(

@@ -1,32 +1,38 @@
-package com.well.contatos.models;
+package com.well.contatos.entity;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.UUID;
+
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import org.springframework.hateoas.RepresentationModel;
 
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "TB_ENDERECO")
-public class EnderecoModel extends RepresentationModel<EnderecoModel> implements Serializable {
+public class EnderecoEntity extends RepresentationModel<EnderecoEntity> implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID idEndereco;
     private String rua;
     private String bairro;
     private String numero;
-
     private String cidade;
     private String cep;
-
     private String estado;
 
     @OneToOne(mappedBy = "endereco")
-    private ContatoModel contato;
+    private ContatoEntity contato;
 
-    public ContatoModel getContato() {
+    public ContatoEntity getContato() {
         return contato;
     }
 
@@ -38,7 +44,7 @@ public class EnderecoModel extends RepresentationModel<EnderecoModel> implements
         this.cidade = cidade;
     }
 
-    public void setContato(ContatoModel contato) {
+    public void setContato(ContatoEntity contato) {
         this.contato = contato;
     }
 
@@ -88,5 +94,18 @@ public class EnderecoModel extends RepresentationModel<EnderecoModel> implements
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof EnderecoEntity that)) return false;
+        if (!super.equals(o)) return false;
+        return Objects.equals(getIdEndereco(), that.getIdEndereco());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), getIdEndereco());
     }
 }

@@ -7,6 +7,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 @Builder
 public class EnderecoDTOResponse {
     private String rua;

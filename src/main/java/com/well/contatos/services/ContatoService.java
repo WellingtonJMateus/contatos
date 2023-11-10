@@ -3,14 +3,10 @@ package com.well.contatos.services;
 
 import com.well.contatos.dtos.ContatoDTOResponse;
 import com.well.contatos.mapper.ContatoDTOResponseMapper;
-import com.well.contatos.models.ContatoModel;
+import com.well.contatos.entity.ContatoEntity;
 import com.well.contatos.repositories.ContatoPaginacaoRepository;
 import com.well.contatos.repositories.ContatoRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
-import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,21 +23,25 @@ import java.util.UUID;
 @Transactional
 public class ContatoService {
 
-    @Autowired
-    private ContatoRepository contatoRepository;
+
+    private final ContatoRepository contatoRepository;
+    private final ContatoPaginacaoRepository contatoPaginacaoRepository;
 
     @Autowired
-    private ContatoPaginacaoRepository contatoPaginacaoRepository;
+    public ContatoService(ContatoRepository contatoRepository, ContatoPaginacaoRepository contatoPaginacaoRepository) {
+        this.contatoRepository = contatoRepository;
+        this.contatoPaginacaoRepository = contatoPaginacaoRepository;
+    }
 
     public List<ContatoDTOResponse> listAll() {
         return ContatoDTOResponseMapper.mapTo(contatoRepository.findAll());
     }
 
-    public ContatoDTOResponse save(ContatoModel contatoModel) {
+    public ContatoDTOResponse save(ContatoEntity contatoModel) {
         return ContatoDTOResponseMapper.mapTo(contatoRepository.save(contatoModel));
     }
 
-    public Optional<ContatoModel> get(UUID uuid) {
+    public Optional<ContatoEntity> get(UUID uuid) {
 
         return contatoRepository.findById(uuid);
     }
@@ -65,7 +64,7 @@ public class ContatoService {
 
     public List<ContatoDTOResponse> getPaginacao(int pageNumber, int pageSize, String sortBy) {
         Pageable paging  = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
-        Page<ContatoModel> pagedResult  = contatoPaginacaoRepository.findAll(paging );
+        Page<ContatoEntity> pagedResult  = contatoPaginacaoRepository.findAll(paging );
         if(pagedResult.hasContent()) {
             return ContatoDTOResponseMapper.mapTo(pagedResult.getContent());
         } else {

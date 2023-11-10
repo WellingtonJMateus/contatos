@@ -5,7 +5,7 @@ import com.well.contatos.dtos.ContatoDTORequest;
 import com.well.contatos.dtos.ContatoDTOResponse;
 import com.well.contatos.mapper.ContatoDTORequestMapper;
 import com.well.contatos.mapper.ContatoDTOResponseMapper;
-import com.well.contatos.models.ContatoModel;
+import com.well.contatos.entity.ContatoEntity;
 import com.well.contatos.services.ContatoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +22,12 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 public class ContatoController {
 
+
+    private final ContatoService contatoService;
     @Autowired
-    private ContatoService contatoService;
+    public ContatoController(ContatoService contatoService) {
+        this.contatoService = contatoService;
+    }
 
     @GetMapping("/contatos/numberrows")
     public ResponseEntity<Long> getNumeroDeRegistros(){
@@ -60,7 +64,7 @@ public class ContatoController {
 
     @DeleteMapping("/contatos/{id}")
     public ResponseEntity<Object> deleteContato(@PathVariable(value="id") UUID id) {
-        Optional<ContatoModel> contatoModel = contatoService.get(id);
+        Optional<ContatoEntity> contatoModel = contatoService.get(id);
         if(contatoModel.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Contato não encontrado.");
         }
@@ -70,7 +74,7 @@ public class ContatoController {
 
     @GetMapping("/contatos/{id}")
     public ResponseEntity<Object> getOneContato(@PathVariable(value="id") UUID id){
-        Optional<ContatoModel> contatoModel = contatoService.get(id);
+        Optional<ContatoEntity> contatoModel = contatoService.get(id);
         if(contatoModel.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Contato não encontrado.");
         }
@@ -83,11 +87,11 @@ public class ContatoController {
     @PutMapping("/contatos/{id}")
     public ResponseEntity<Object> updateContato(@PathVariable(value="id") UUID id,
                                                 @RequestBody @Valid  ContatoDTORequest contatoDTORequest) {
-        Optional<ContatoModel> contatoModel = contatoService.get(id);
+        Optional<ContatoEntity> contatoModel = contatoService.get(id);
         if(contatoModel.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Contato não encontrado..");
         }
-        ContatoModel model = ContatoDTORequestMapper.mapTo(contatoDTORequest);
+        ContatoEntity model = ContatoDTORequestMapper.mapTo(contatoDTORequest);
         model.setIdContato(id);
         return ResponseEntity.status(HttpStatus.OK).body(contatoService.save(model));
     }

@@ -1,6 +1,6 @@
 package com.well.contatos.repositories;
 
-import com.well.contatos.models.ContatoModel;
+import com.well.contatos.entity.ContatoEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -13,14 +13,14 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface ContatoRepository extends JpaRepository<ContatoModel, UUID> {
-   @Query(value = "SELECT c FROM ContatoModel c WHERE c.idade >= :idade")
-   List<ContatoModel> findContatoModelByIdade(@Param("idade") Integer idade);
+public interface ContatoRepository extends JpaRepository<ContatoEntity, UUID> {
+   @Query(value = "SELECT c FROM ContatoEntity c WHERE c.idade >= :idade")
+   List<ContatoEntity> findContatoModelByIdade(@Param("idade") Integer idade);
 
-   @Query(value = "SELECT c FROM ContatoModel c")
-   List<ContatoModel> findAllContatoModel(Sort sort);
+   @Query(value = "SELECT c FROM ContatoEntity c")
+   List<ContatoEntity> findAllContatoModel(Sort sort);
 
-   @Query(value = "SELECT c FROM ContatoModel c ORDER BY idContato")
-   Page<ContatoModel> findAllContatoModelWithPagination(Pageable pageable);
+   @Query(value = "SELECT c FROM ContatoEntity c ORDER BY idContato")
+   Page<ContatoEntity> findAllContatoEntityWithPagination(Pageable pageable);
 
 }

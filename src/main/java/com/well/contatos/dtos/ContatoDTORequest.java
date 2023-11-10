@@ -1,15 +1,13 @@
 package com.well.contatos.dtos;
 
-import com.well.contatos.models.EnderecoModel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
+@Builder
 public class ContatoDTORequest {
     private String nome;
     private Integer idade;
