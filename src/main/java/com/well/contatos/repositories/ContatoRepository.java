@@ -23,4 +23,7 @@ public interface ContatoRepository extends JpaRepository<ContatoEntity, UUID> {
    @Query(value = "SELECT c FROM ContatoEntity c ORDER BY idContato")
    Page<ContatoEntity> findAllContatoEntityWithPagination(Pageable pageable);
 
+   @Query(value = "SELECT c FROM ContatoEntity c WHERE c.nome LIKE :nome")
+   List<ContatoEntity> findAllByNome(@Param("nome") String nome);
+
 }

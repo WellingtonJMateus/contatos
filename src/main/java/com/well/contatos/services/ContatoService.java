@@ -54,11 +54,11 @@ public class ContatoService {
         return contatoRepository.count();
     }
 
-    public List<ContatoDTOResponse> getContaModelByAge(Integer age) {
+    public List<ContatoDTOResponse> getContatoByAge(Integer age) {
         return ContatoDTOResponseMapper.mapTo(contatoRepository.findContatoModelByIdade(age));
     }
 
-    public List<ContatoDTOResponse> getContatoModelOrdernadoPor(String campo) {
+    public List<ContatoDTOResponse> getContatoOrdernadoPor(String campo) {
         return ContatoDTOResponseMapper.mapTo(contatoRepository.findAllContatoModel(Sort.by(campo)));
     }
 
@@ -70,6 +70,10 @@ public class ContatoService {
         } else {
             return new ArrayList<>();
         }
+    }
+
+    public List<ContatoDTOResponse> getContatoPorNomeInicializaCom(String nome){
+        return ContatoDTOResponseMapper.mapTo(contatoRepository.findAllByNome("%"+nome+"%"));
     }
 
 
