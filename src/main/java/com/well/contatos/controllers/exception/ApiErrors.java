@@ -1,6 +1,5 @@
 package com.well.contatos.controllers.exception;
 
-import java.util.Arrays;
 import java.util.List;
 
 import lombok.Getter;

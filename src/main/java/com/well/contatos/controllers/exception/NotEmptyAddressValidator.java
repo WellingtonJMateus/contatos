@@ -3,7 +3,6 @@ package com.well.contatos.controllers.exception;
 import com.well.contatos.dtos.EnderecoDTORequest;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import jakarta.validation.constraints.NotEmpty;
 
 public class NotEmptyAddressValidator implements ConstraintValidator<NotEmptyAddress, EnderecoDTORequest> {
     @Override
