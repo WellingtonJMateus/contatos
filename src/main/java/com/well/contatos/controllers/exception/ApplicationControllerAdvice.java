@@ -27,4 +27,10 @@ public class ApplicationControllerAdvice {
         return new ApiErrors(ex.getMessage());
     }
 
+    @ExceptionHandler(ContatoNotSaveException.class)
+    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+    public ApiErrors handleContatoNotSaveException(ContatoNotSaveException ex) {
+        return new ApiErrors(ex.getMessage());
+    }
+
 }

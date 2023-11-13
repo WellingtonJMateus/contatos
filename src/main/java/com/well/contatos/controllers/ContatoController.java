@@ -2,6 +2,7 @@ package com.well.contatos.controllers;
 
 
 import com.well.contatos.controllers.exception.ContatoNotFoundException;
+import com.well.contatos.controllers.exception.ContatoNotSaveException;
 import com.well.contatos.dtos.ContatoDTORequest;
 import com.well.contatos.dtos.ContatoDTOResponse;
 import com.well.contatos.mapper.ContatoDTORequestMapper;
@@ -46,7 +47,7 @@ public class ContatoController {
                                                                  @RequestParam(name = "orderPorCampo") String sortBy) {
         List<ContatoDTOResponse> paginacao = contatoService.getPaginacao(pageNumber, pageSize, sortBy);
         if(paginacao.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{campo.controller.listavazia}");
+            throw new ContatoNotFoundException("Not found");
         }
         return ResponseEntity.status(HttpStatus.OK).body(paginacao);
     }
@@ -55,7 +56,7 @@ public class ContatoController {
     public ResponseEntity<Object> getContatosPorIdade(@PathVariable(value = "age") Integer age) {
         List<ContatoDTOResponse> contatoByAge = contatoService.getContatoByAge(age);
         if(contatoByAge.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{campo.controller.listavazia}");
+            throw new ContatoNotFoundException("Not found");
         }
         return ResponseEntity.status(HttpStatus.OK).body(contatoByAge);
     }
@@ -64,7 +65,7 @@ public class ContatoController {
     public ResponseEntity<Object> getContatosOrdenadosPorCampo(@PathVariable(value = "campo") String campo) {
         List<ContatoDTOResponse> contatoOrdernadoPor = contatoService.getContatoOrdernadoPor(campo);
         if(contatoOrdernadoPor.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{campo.controller.listavazia}");
+            throw new ContatoNotFoundException("Not found");
         }
         return ResponseEntity.status(HttpStatus.OK).body(contatoService.getContatoOrdernadoPor(campo));
     }
@@ -73,7 +74,7 @@ public class ContatoController {
     public ResponseEntity<Object> getAllContatos() {
         List<ContatoDTOResponse> contatoList = contatoService.listAll();
         if(contatoList.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{campo.controller.listavazia}");
+            throw new ContatoNotFoundException("Not found");
         }
         return ResponseEntity.status(HttpStatus.OK).body(contatoList);
     }
@@ -82,7 +83,7 @@ public class ContatoController {
     public ResponseEntity<Object> getAllContatosInicializaCom(@PathVariable(value = "nome") String nome) {
         List<ContatoDTOResponse> contatoList = contatoService.getContatoPorNomeInicializaCom(nome);
         if(contatoList.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{Não existe registros.{campo.controller.listavazia}");
+            throw new ContatoNotFoundException("Not found");
         }
         return ResponseEntity.status(HttpStatus.OK).body(contatoList);
     }
@@ -91,26 +92,26 @@ public class ContatoController {
     public ResponseEntity<Object> saveContato(@RequestBody @Valid ContatoDTORequest contatoDTORequest) {
         ContatoEntity contatoEntity = ContatoDTORequestMapper.mapTo(contatoDTORequest);
         if(contatoEntity == null){
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("{campo.controller.erro.salvar}");
+            throw new ContatoNotSaveException("Not Saved");
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(contatoService.save(ContatoDTORequestMapper.mapTo(contatoDTORequest)));
     }
 
-    @DeleteMapping("/contatos/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteContato(@PathVariable(value = "id") UUID id) {
         Optional<ContatoEntity> contatoModel = contatoService.get(id);
         if (contatoModel.isEmpty()) {
             throw new ContatoNotFoundException("Not found");
         }
         contatoService.delete(contatoModel.get().getIdContato());
-        return ResponseEntity.status(HttpStatus.OK).body("Contato deletado com sucesso.");
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @GetMapping("/contatos/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Object> getOneContato(@PathVariable(value = "id") UUID id) {
         Optional<ContatoEntity> contatoModel = contatoService.get(id);
         if (contatoModel.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{campo.controller.listavazia}");
+            throw new ContatoNotFoundException("Not found");
         }
         contatoModel.get().add(linkTo(methodOn(ContatoController.class).getAllContatos()).withRel("Lista de Contatos"));
         ContatoDTOResponse contatoDTOResponse = ContatoDTOResponseMapper.mapTo(contatoModel.get());
@@ -118,12 +119,12 @@ public class ContatoController {
     }
 
 
-    @PutMapping("/contatos/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Object> updateContato(@PathVariable(value = "id") UUID id,
                                                 @RequestBody @Valid ContatoDTORequest contatoDTORequest) {
         Optional<ContatoEntity> contatoModel = contatoService.get(id);
         if (contatoModel.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{campo.controller.contato.nao.encontrado}");
+            throw new ContatoNotFoundException("Not found");
         }
         ContatoEntity model = ContatoDTORequestMapper.mapTo(contatoDTORequest);
         model.setIdContato(id);
