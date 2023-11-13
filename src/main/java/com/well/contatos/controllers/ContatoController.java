@@ -11,11 +11,9 @@ import com.well.contatos.entity.ContatoEntity;
 import com.well.contatos.services.ContatoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 
 import java.util.*;
@@ -23,7 +21,6 @@ import java.util.*;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-//@RestController("/contatos")
 @RestController
 @RequestMapping(path = "/contatos/")
 public class ContatoController {
